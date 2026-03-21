@@ -8,7 +8,7 @@ Diseñadas para automatizar tareas manuales del área de finanzas.
 ## 🚀 Instalación
 ```bash
 # Clonar el repositorio
-git clone https://github.com/TU_USUARIO/finanzas_tools.git
+git clone https://github.com/ramirousnayo/finanzas_tools.git
 cd finanzas_tools
 
 # Crear entorno virtual
