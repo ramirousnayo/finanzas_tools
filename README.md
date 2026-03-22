@@ -211,6 +211,36 @@ Hoja `Resultados`: `cuenta`, `valor_actual`, `valor_anterior`
 - Detalle completo con variación vs período anterior
 - Semáforo visual ✅ ⚠️ 🔴
 
+### 9. Gestión de Líneas de Crédito
+
+Controla el estado de líneas de crédito bancarias con alertas de uso y vencimiento.
+
+**Tipos de línea soportados:**
+Sobregiro, Crédito Rotativo, Factoring, Leasing, Línea Capital de Trabajo, Confirming
+
+**Columnas requeridas:**
+
+| Columna | Descripción |
+|---|---|
+| banco | Nombre del banco |
+| tipo_linea | Tipo de línea de crédito |
+| cupo_total | Cupo total aprobado |
+| cupo_usado | Cupo utilizado |
+| tasa_anual | Tasa anual en % (ej: 8.5) |
+| fecha_vencimiento | Fecha vencimiento (DD/MM/YYYY) |
+| garantia | Tipo de garantía |
+
+**Semáforo de uso:**
+- ✅ Verde — uso < 50%
+- ⚠️ Amarillo — uso 50%-80%
+- 🟠 Naranjo — uso 80%-95%
+- 🔴 Rojo — uso > 95%
+
+**Output — Excel con 3 hojas:**
+- Resumen con semáforo por uso y vencimiento
+- Concentración por banco
+- Alertas activas priorizadas
+
 ---
 
 ## 📁 Estructura del proyecto
@@ -223,6 +253,7 @@ finanzas_tools/
 │   ├── extracto_banco_marzo.xlsx
 │   ├── libro_interno_marzo.xlsx
 │   ├── flujo_caja_2025.xlsx
+│   ├── lineas_credito.xlsx
 │   └── proveedores_prueba.xlsx
 ├── modules/
 │   ├── __init__.py
@@ -233,7 +264,8 @@ finanzas_tools/
 │   ├── estimador_cobranzas.py
 │   ├── flujo_caja.py
 │   ├── gestor_archivos.py
-│   └── indicadores_financieros.py
+│   ├── indicadores_financieros.py
+│   └── lineas_credito.py
 ├── main.py
 ├── requirements.txt
 └── README.md
