@@ -133,6 +133,27 @@ CATEGORIA_YYYYMM_nombre_original.ext
 - Archivos organizados en carpetas por categoría
 - Índice Excel con detalle y resumen por categoría
 
+### 6. Estimador de Cobranzas y Recaudación
+
+Proyecta la recaudación esperada aplicando probabilidades de cobro
+por tramo de vencimiento sobre la cartera actual.
+
+**Probabilidades aplicadas:**
+
+| Tramo | Probabilidad | Interpretación |
+|---|---|---|
+| Al día | 95% | Alta probabilidad — cliente al corriente |
+| 0-30 días | 85% | Buena probabilidad — atraso leve |
+| 31-60 días | 65% | Riesgo moderado — seguimiento requerido |
+| 61-90 días | 40% | Riesgo alto — gestión activa necesaria |
+| +90 días | 15% | Riesgo crítico — posible incobrable |
+
+**Output — Excel con 4 hojas:**
+- Detalle con monto estimado por factura
+- Proyección mensual de recaudación
+- Estimación por cliente con probabilidad promedio
+- Tabla de probabilidades aplicadas
+
 ---
 
 ## 📁 Estructura del proyecto
@@ -149,6 +170,7 @@ finanzas_tools/
 │   ├── amortizacion.py
 │   ├── cobranzas.py
 │   ├── conciliacion.py
+│   ├── estimador_cobranzas.py
 │   ├── flujo_caja.py
 │   └── gestor_archivos.py
 ├── main.py
