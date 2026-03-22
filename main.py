@@ -1,6 +1,7 @@
 from modules.amortizacion import run as run_amortizacion
 from modules.cobranzas import run as run_cobranzas
 from modules.flujo_caja import run as run_flujo
+from modules.conciliacion import run as run_conciliacion
 
 while True:
     print("\n╔══════════════════════════════════╗")
@@ -9,6 +10,7 @@ while True:
     print("\n  [1] Tabla de amortización")
     print("  [2] Aging de cobranzas")
     print("  [3] Flujo de caja")
+    print("  [4] Conciliación bancaria")
     print("  [0] Salir\n")
 
     opcion = input("  Selecciona una opción: ").strip()
@@ -19,6 +21,8 @@ while True:
         run_cobranzas()
     elif opcion == "3":
         run_flujo()
+    elif opcion == "4":
+        run_conciliacion()
     elif opcion == "0":
         print("\n  Hasta luego 👋\n")
         break
