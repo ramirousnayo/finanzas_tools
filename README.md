@@ -11,11 +11,17 @@ Diseñadas para automatizar tareas manuales del área de finanzas.
 git clone https://github.com/ramirousnayo/finanzas_tools.git
 cd finanzas_tools
 
-# Crear entorno virtual
-python -m venv venv
+**Mac / Linux:**
+```bash
+python3 -m venv venv
 source venv/bin/activate
+pip install -r requirements.txt
+```
 
-# Instalar dependencias
+**Windows:**
+```bash
+python -m venv venv
+venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
@@ -241,6 +247,24 @@ Sobregiro, Crédito Rotativo, Factoring, Leasing, Línea Capital de Trabajo, Con
 - Concentración por banco
 - Alertas activas priorizadas
 
+### 10. Reporte Ejecutivo
+
+Consolida todos los módulos en un único Excel para presentar a gerencia o directorio.
+
+**Incluye:**
+- Portada con índice de contenidos
+- Dashboard con KPIs y semáforo visual
+- Resumen de cobranzas por tramo
+- Ranking de proveedores con concentración
+- Estado de líneas de crédito con alertas
+- Indicadores financieros clave
+
+**Cómo usarlo:**
+```bash
+python main.py
+# Opción 10 → ingresar rutas de archivos de cada módulo
+```
+
 ---
 
 ## 📁 Estructura del proyecto
@@ -265,7 +289,8 @@ finanzas_tools/
 │   ├── flujo_caja.py
 │   ├── gestor_archivos.py
 │   ├── indicadores_financieros.py
-│   └── lineas_credito.py
+│   ├── lineas_credito.py
+│   └── reporte_ejecutivo.py
 ├── main.py
 ├── requirements.txt
 └── README.md
