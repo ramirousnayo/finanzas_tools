@@ -2,3 +2,4 @@ venv/
 __pycache__/
 *.xlsx
 !data/cobranzas_prueba.xlsx
+.DS_Store
