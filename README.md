@@ -10,6 +10,7 @@ Diseñadas para automatizar tareas manuales del área de finanzas.
 # Clonar el repositorio
 git clone https://github.com/ramirousnayo/finanzas_tools.git
 cd finanzas_tools
+```
 
 **Mac / Linux:**
 ```bash
