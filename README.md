@@ -154,6 +154,34 @@ por tramo de vencimiento sobre la cartera actual.
 - Estimación por cliente con probabilidad promedio
 - Tabla de probabilidades aplicadas
 
+### 7. Análisis de Proveedores
+
+Ranking, concentración, proveedores críticos e historial mensual de pagos.
+
+**Columnas requeridas en el archivo Excel:**
+
+| Columna | Descripción |
+|---|---|
+| proveedor | Nombre del proveedor |
+| rut | RUT del proveedor |
+| factura | Número de factura |
+| fecha_factura | Fecha emisión (DD/MM/YYYY) |
+| fecha_pago | Fecha de pago (DD/MM/YYYY) — vacío si pendiente |
+| monto | Monto de la factura |
+| credito_dias | Días de crédito pactado (default 30) |
+
+**Estados detectados automáticamente:**
+- ✅ Pagado a tiempo
+- ⚠️ Pagado con atraso
+- 🔵 Pendiente vigente
+- 🔴 Pendiente vencido
+
+**Output — Excel con 4 hojas:**
+- Ranking por monto con concentración acumulada
+- Proveedores críticos con facturas vencidas
+- Historial mensual por estado
+- Detalle completo de facturas
+
 ---
 
 ## 📁 Estructura del proyecto
@@ -164,10 +192,12 @@ finanzas_tools/
 │   ├── cobranzas_prueba.xlsx
 │   ├── extracto_banco_marzo.xlsx
 │   ├── libro_interno_marzo.xlsx
-│   └── flujo_caja_2025.xlsx
+│   ├── flujo_caja_2025.xlsx
+│   └── proveedores_prueba.xlsx
 ├── modules/
 │   ├── __init__.py
 │   ├── amortizacion.py
+│   ├── analisis_proveedores.py
 │   ├── cobranzas.py
 │   ├── conciliacion.py
 │   ├── estimador_cobranzas.py
