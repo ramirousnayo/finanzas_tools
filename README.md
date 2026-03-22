@@ -74,6 +74,40 @@ Genera una plantilla Excel para proyectar el flujo de caja mensual y detecta mes
 - Opción 1 — Genera plantilla en blanco para completar
 - Opción 2 — Procesa plantilla completada y alerta saldos negativos
 
+### 4. Conciliación Bancaria
+
+Cruza el extracto del banco contra el libro interno por fecha y monto.
+
+**Columnas requeridas en ambos archivos:**
+
+| Columna | Descripción |
+|---|---|
+| fecha | Fecha del movimiento (DD/MM/YYYY) |
+| monto | Monto del movimiento |
+| descripcion | Descripción o glosa |
+
+**Output — Excel con 4 hojas:**
+- Resumen general con totales
+- Movimientos conciliados ✅
+- Solo en banco ⚠️
+- Solo en libro interno 🔴### 4. Conciliación Bancaria
+
+Cruza el extracto del banco contra el libro interno por fecha y monto.
+
+**Columnas requeridas en ambos archivos:**
+
+| Columna | Descripción |
+|---|---|
+| fecha | Fecha del movimiento (DD/MM/YYYY) |
+| monto | Monto del movimiento |
+| descripcion | Descripción o glosa |
+
+**Output — Excel con 4 hojas:**
+- Resumen general con totales
+- Movimientos conciliados ✅
+- Solo en banco ⚠️
+- Solo en libro interno 🔴
+
 ---
 
 ## 📁 Estructura del proyecto
@@ -81,17 +115,19 @@ Genera una plantilla Excel para proyectar el flujo de caja mensual y detecta mes
 finanzas_tools/
 ├── data/
 │   ├── cobranzas_prueba.xlsx
+│   ├── extracto_banco_marzo.xlsx
+│   ├── libro_interno_marzo.xlsx
 │   └── flujo_caja_2025.xlsx
 ├── modules/
 │   ├── __init__.py
 │   ├── amortizacion.py
 │   ├── cobranzas.py
+│   ├── conciliacion.py
 │   └── flujo_caja.py
 ├── main.py
 ├── requirements.txt
 └── README.md
 ```
-
 ---
 
 ## 🛠️ Stack
