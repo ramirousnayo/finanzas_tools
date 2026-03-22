@@ -108,12 +108,38 @@ Cruza el extracto del banco contra el libro interno por fecha y monto.
 - Solo en banco ⚠️
 - Solo en libro interno 🔴
 
+### 5. Gestor de Archivos
+
+Organiza, renombra y genera índice Excel de archivos financieros.
+
+**Estructura generada:**
+```
+destino/
+└── 2025/
+    └── 03_Marzo/
+        ├── Contratos/
+        ├── Bancos/
+        ├── Respaldos/
+        ├── Prestamos/
+        └── Facturas/
+```
+
+**Convención de nombres:**
+```
+CATEGORIA_YYYYMM_nombre_original.ext
+```
+
+**Output:**
+- Archivos organizados en carpetas por categoría
+- Índice Excel con detalle y resumen por categoría
+
 ---
 
 ## 📁 Estructura del proyecto
 ```
 finanzas_tools/
 ├── data/
+│   ├── archivos_prueba/
 │   ├── cobranzas_prueba.xlsx
 │   ├── extracto_banco_marzo.xlsx
 │   ├── libro_interno_marzo.xlsx
@@ -123,7 +149,8 @@ finanzas_tools/
 │   ├── amortizacion.py
 │   ├── cobranzas.py
 │   ├── conciliacion.py
-│   └── flujo_caja.py
+│   ├── flujo_caja.py
+│   └── gestor_archivos.py
 ├── main.py
 ├── requirements.txt
 └── README.md
