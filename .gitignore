@@ -5,6 +5,10 @@ __pycache__/
 !data/extracto_banco_marzo.xlsx
 !data/libro_interno_marzo.xlsx
 !data/flujo_caja_2025.xlsx
+!data/proveedores_prueba.xlsx
+!data/balance_resultados_2025.xlsx
+!data/lineas_credito.xlsx
+*.pdf
+!data/archivos_prueba/
 .DS_Store
 data/archivos_organizados/
-*.pdf
