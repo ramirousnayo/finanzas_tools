@@ -3,6 +3,7 @@ from modules.cobranzas import run as run_cobranzas
 from modules.flujo_caja import run as run_flujo
 from modules.conciliacion import run as run_conciliacion
 from modules.gestor_archivos import run as run_gestor
+from modules.estimador_cobranzas import run as run_estimador
 
 while True:
     print("\n╔══════════════════════════════════╗")
@@ -13,6 +14,7 @@ while True:
     print("  [3] Flujo de caja")
     print("  [4] Conciliación bancaria")
     print("  [5] Gestor de archivos")
+    print("  [6] Estimador de cobranzas")
     print("  [0] Salir\n")
 
     opcion = input("  Selecciona una opción: ").strip()
@@ -27,6 +29,8 @@ while True:
         run_conciliacion()
     elif opcion == "5":
         run_gestor()
+    elif opcion == "6":
+        run_estimador()
     elif opcion == "0":
         print("\n  Hasta luego 👋\n")
         break
