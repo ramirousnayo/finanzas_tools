@@ -6,3 +6,5 @@ __pycache__/
 !data/libro_interno_marzo.xlsx
 !data/flujo_caja_2025.xlsx
 .DS_Store
+data/archivos_organizados/
+*.pdf
