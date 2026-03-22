@@ -182,6 +182,35 @@ Ranking, concentración, proveedores críticos e historial mensual de pagos.
 - Historial mensual por estado
 - Detalle completo de facturas
 
+### 8. Indicadores Financieros
+
+Calcula ratios financieros clave con semáforo de alertas y comparativo vs período anterior.
+
+**Indicadores calculados:**
+
+| Categoría | Indicador | Meta |
+|---|---|---|
+| Liquidez | Liquidez corriente | >= 1.5x |
+| Liquidez | Prueba ácida | >= 1.0x |
+| Eficiencia | Rotación de cartera | >= 6x |
+| Eficiencia | Días de cobro promedio | <= 60 días |
+| Eficiencia | Días de pago promedio | 30-60 días |
+| Endeudamiento | Razón de endeudamiento | <= 60% |
+| Endeudamiento | Concentración deuda financiera | <= 40% |
+| Ratios bancarios | Deuda Financiera / EBITDA | <= 3.0x |
+| Ratios bancarios | Cobertura de intereses | >= 2.5x |
+| Rentabilidad | Margen EBITDA | >= 15% |
+| Rentabilidad | Margen neto | >= 5% |
+
+**Columnas requeridas:**
+
+Hoja `Balance`: `cuenta`, `valor_actual`, `valor_anterior`
+Hoja `Resultados`: `cuenta`, `valor_actual`, `valor_anterior`
+
+**Output — Excel con 2 hojas:**
+- Detalle completo con variación vs período anterior
+- Semáforo visual ✅ ⚠️ 🔴
+
 ---
 
 ## 📁 Estructura del proyecto
@@ -189,6 +218,7 @@ Ranking, concentración, proveedores críticos e historial mensual de pagos.
 finanzas_tools/
 ├── data/
 │   ├── archivos_prueba/
+│   ├── balance_resultados_2025.xlsx
 │   ├── cobranzas_prueba.xlsx
 │   ├── extracto_banco_marzo.xlsx
 │   ├── libro_interno_marzo.xlsx
@@ -202,11 +232,13 @@ finanzas_tools/
 │   ├── conciliacion.py
 │   ├── estimador_cobranzas.py
 │   ├── flujo_caja.py
-│   └── gestor_archivos.py
+│   ├── gestor_archivos.py
+│   └── indicadores_financieros.py
 ├── main.py
 ├── requirements.txt
 └── README.md
 ```
+
 ---
 
 ## 🛠️ Stack
