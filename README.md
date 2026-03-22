@@ -38,6 +38,7 @@ Genera una tabla de amortización en Excel con los siguientes sistemas:
 | Alemán | Capital fijo, intereses decrecientes |
 | Americano | Intereses periódicos, capital al final |
 | Bullet | Pago único al vencimiento |
+| Leasing | Cuota fija + opción de compra al final |
 
 ---
 

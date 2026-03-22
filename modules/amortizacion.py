@@ -5,7 +5,7 @@ from datetime import date
 from dateutil.relativedelta import relativedelta
 
 
-# ── Estilos reutilizables ──────────────────────────────────────────
+# ── Estilos y Constantes ──────────────────────────────────────────
 
 def _borde():
     s = Side(style="thin")
@@ -17,11 +17,21 @@ def _fill(hex):
 CENTRO  = Alignment(horizontal="center")
 DERECHA = Alignment(horizontal="right")
 
+# Colores y fuentes
+COLOR_TITULO = "1F3864"
+COLOR_TEXTO_ENCABEZADO = "FFFFFF"
+COLOR_FONDO_ENCABEZADO = "1F3864"
+COLOR_OC_FILL = "FFF2CC"
+COLOR_OC_FONT = "7F4F00"
+COLOR_FILA_PAR = "D6E4F0"
+COLOR_FILA_IMPAR = "FFFFFF"
+COLOR_TOTAL_FILL = "D9D9D9"
+
 
 # ── Cálculos ───────────────────────────────────────────────────────
 
 def cuota_frances(capital, tasa_mensual, plazo):
-    """Cuota fija — Sistema Francés."""
+    """Calcula la cuota fija del sistema francés."""
     if tasa_mensual == 0:
         return capital / plazo
     return capital * tasa_mensual / (1 - (1 + tasa_mensual) ** -plazo)
@@ -64,15 +74,11 @@ def filas_americano(capital, tasa_mensual, plazo, fecha_inicio):
     interes = capital * tasa_mensual
     filas, fecha = [], fecha_inicio
     for mes in range(1, plazo + 1):
-        if mes < plazo:
-            cuota_r = interes
-            cap     = 0
-            s_fin   = capital
-        else:
-            cuota_r = capital + interes
-            cap     = capital
-            s_fin   = 0
-        filas.append((mes, fecha, capital if mes < plazo else capital, cuota_r, interes, cap, s_fin))
+        es_fin = (mes == plazo)
+        cuota_r = (capital + interes) if es_fin else interes
+        cap     = capital if es_fin else 0
+        s_fin   = 0 if es_fin else capital
+        filas.append((mes, fecha, capital, cuota_r, interes, cap, s_fin))
         fecha += relativedelta(months=1)
     return filas
 
@@ -82,7 +88,6 @@ def filas_bullet(capital, tasa_mensual, plazo, fecha_inicio):
     interes_total = capital * ((1 + tasa_mensual) ** plazo - 1)
     filas, fecha  = [], fecha_inicio
     for mes in range(1, plazo + 1):
-        interes_acum = capital * ((1 + tasa_mensual) ** mes - 1)
         if mes < plazo:
             filas.append((mes, fecha, capital, 0, 0, 0, capital))
         else:
@@ -92,67 +97,98 @@ def filas_bullet(capital, tasa_mensual, plazo, fecha_inicio):
     return filas
 
 
+def filas_leasing(capital, tasa_mensual, plazo, fecha_inicio):
+    cuota = cuota_frances(capital, tasa_mensual, plazo)
+    filas, saldo, fecha = [], capital, fecha_inicio
+    for mes in range(1, plazo + 1):
+        interes = saldo * tasa_mensual
+        cap     = cuota - interes
+        s_fin   = max(saldo - cap, 0)
+        filas.append((mes, fecha, saldo, cuota, interes, cap, s_fin))
+        saldo  = s_fin
+        fecha += relativedelta(months=1)
+
+    # Opción de compra — cuota adicional al final
+    filas.append((plazo + 1, fecha, 0, cuota, 0, cuota, 0))
+    return filas, cuota
+
+
 # ── Excel ──────────────────────────────────────────────────────────
 
-def generar_excel(filas, capital, tasa, plazo, moneda, nombre, sistema):
+def _formatear_celda(celda, valor, font=None, fill=None, alignment=None, border=None, num_format=None):
+    if valor is not None:
+        try:
+            celda.value = valor
+        except AttributeError:
+            pass # MergedCell
+    if font: celda.font = font
+    if fill: celda.fill = fill
+    if alignment: celda.alignment = alignment
+    if border: celda.border = border
+    if num_format: celda.number_format = num_format
+
+
+def generar_excel(filas, capital, tasa, plazo, moneda, nombre, sistema="Francés"):
     wb = Workbook()
     ws = wb.active
-    ws.title = sistema
+    ws.title = sistema[:31] # Límite de openpyxl
+
+    # Estilos comunes
+    font_header = Font(name="Arial", bold=True, color=COLOR_TEXTO_ENCABEZADO, size=10)
+    font_data   = Font(name="Arial", size=10)
+    font_oc     = Font(name="Arial", size=10, bold=True, color=COLOR_OC_FONT)
+    font_total  = Font(name="Arial", bold=True, size=10)
+    fill_header = _fill(COLOR_FONDO_ENCABEZADO)
+    fill_oc     = _fill(COLOR_OC_FILL)
+    fill_total  = _fill(COLOR_TOTAL_FILL)
+    borde       = _borde()
 
     # Título
     ws.merge_cells("A1:G1")
-    ws["A1"] = f"TABLA DE AMORTIZACIÓN — {sistema.upper()} — {nombre.upper()}"
-    ws["A1"].font      = Font(name="Arial", bold=True, size=13, color="1F3864")
-    ws["A1"].alignment = CENTRO
+    _formatear_celda(ws["A1"], f"TABLA DE AMORTIZACIÓN — {sistema.upper()} — {nombre.upper()}",
+                     font=Font(name="Arial", bold=True, size=13, color=COLOR_TITULO), alignment=CENTRO)
 
     total_cuotas = sum(f[3] for f in filas)
     total_int    = sum(f[4] for f in filas)
+    opcion_compra = filas[-1][3] if sistema == "Leasing" else 0
+    oc_txt = f"   |   Opción de compra: {moneda} {opcion_compra:,.0f}" if opcion_compra else ""
 
     ws.merge_cells("A2:G2")
-    ws["A2"] = (f"Capital: {moneda} {capital:,.0f}   |   Tasa anual: {tasa:.2f}%   |   "
-                f"Plazo: {plazo} meses   |   Total pagado: {moneda} {total_cuotas:,.0f}   |   "
-                f"Total intereses: {moneda} {total_int:,.0f}")
-    ws["A2"].font      = Font(name="Arial", size=9, color="555555")
-    ws["A2"].alignment = CENTRO
+    info_text = (f"Capital: {moneda} {capital:,.0f}   |   Tasa anual: {tasa:.2f}%   |   "
+                 f"Plazo: {plazo} meses   |   Total pagado: {moneda} {total_cuotas:,.0f}   |   "
+                 f"Total intereses: {moneda} {total_int:,.0f}{oc_txt}")
+    _formatear_celda(ws["A2"], info_text, font=Font(name="Arial", size=9, color="555555"), alignment=CENTRO)
 
     # Encabezados
     cols = [("N°",6), ("Fecha",13), ("Saldo Inicial",17), ("Cuota",14),
             ("Interés",13), ("Capital",13), ("Saldo Final",14)]
     for i, (h, w) in enumerate(cols, 1):
         ws.column_dimensions[get_column_letter(i)].width = w
-        c = ws.cell(3, i, h)
-        c.font      = Font(name="Arial", bold=True, color="FFFFFF", size=10)
-        c.fill      = _fill("1F3864")
-        c.alignment = CENTRO
-        c.border    = _borde()
+        _formatear_celda(ws.cell(3, i), h, font=font_header, fill=fill_header, alignment=CENTRO, border=borde)
 
     # Filas
     for mes, fecha, s_ini, cuota_r, interes, cap, s_fin in filas:
-        row     = mes + 3
-        relleno = _fill("D6E4F0" if mes % 2 == 0 else "FFFFFF")
-        datos   = [mes, fecha, s_ini, cuota_r, interes, cap, s_fin]
-        fmts    = ["0", "DD/MM/YYYY", "#,##0", "#,##0", "#,##0", "#,##0", "#,##0"]
-        alns    = [CENTRO, CENTRO, DERECHA, DERECHA, DERECHA, DERECHA, DERECHA]
-        for col, (v, f, a) in enumerate(zip(datos, fmts, alns), 1):
-            c = ws.cell(row, col, v)
-            c.font, c.fill, c.alignment, c.border = (
-                Font(name="Arial", size=10), relleno, a, _borde())
-            c.number_format = f
+        row   = mes + 3
+        es_oc = (sistema == "Leasing" and mes == plazo + 1)
+        
+        relleno = fill_oc if es_oc else _fill(COLOR_FILA_PAR if mes % 2 == 0 else COLOR_FILA_IMPAR)
+        fuente  = font_oc if es_oc else font_data
+        
+        datos = [mes, fecha, s_ini, cuota_r, interes, cap, s_fin]
+        fmts  = ["0", "DD/MM/YYYY", "#,##0", "#,##0", "#,##0", "#,##0", "#,##0"]
+        alns  = [CENTRO, CENTRO, DERECHA, DERECHA, DERECHA, DERECHA, DERECHA]
+        
+        for col, (v, fmt, aln) in enumerate(zip(datos, fmts, alns), 1):
+            val = "OC" if es_oc and col == 1 else v
+            _formatear_celda(ws.cell(row, col), val, font=fuente, fill=relleno, alignment=aln, border=borde, num_format=fmt)
 
     # Totales
-    tr = plazo + 4
+    tr = len(filas) + 4
     ws.merge_cells(f"A{tr}:B{tr}")
     for col in range(1, 8):
         c = ws.cell(tr, col)
-        c.fill, c.border = _fill("D9D9D9"), _borde()
-        c.font = Font(name="Arial", bold=True, size=10)
-        if col == 1:
-            c.value, c.alignment = "TOTAL", CENTRO
-        elif col in [4, 5, 6]:
-            letra           = get_column_letter(col)
-            c.value         = f"=SUM({letra}4:{letra}{tr-1})"
-            c.number_format = "#,##0"
-            c.alignment     = DERECHA
+        val = "TOTAL" if col == 1 else (f"=SUM({get_column_letter(col)}4:{get_column_letter(col)}{tr-1})" if col in [4, 5, 6] else None)
+        _formatear_celda(c, val, font=font_total, fill=fill_total, alignment=CENTRO if col == 1 else DERECHA, border=borde, num_format="#,##0" if col in [4,5,6] else None)
 
     ws.freeze_panes = "A4"
     archivo = f"amortizacion_{sistema.lower()}_{nombre.replace(' ', '_')}.xlsx"
@@ -160,53 +196,59 @@ def generar_excel(filas, capital, tasa, plazo, moneda, nombre, sistema):
     return archivo
 
 
-# ── Menú ───────────────────────────────────────────────────────────
+# ── Menú y Orquestación ────────────────────────────────────────────
+
+def _get_input(msg, default=None, parser=str):
+    """Helper para obtener input con validación básica."""
+    try:
+        val = input(f"  {msg:<18}: ").strip().replace(",", "")
+        if not val and default is not None: return default
+        return parser(val)
+    except ValueError:
+        print(f"  Entrada inválida. Usando default: {default}")
+        return default
+
 
 def run():
     print("\n=== TABLA DE AMORTIZACIÓN ===\n")
-    print("  Sistemas disponibles:")
-    print("  [1] Francés   — cuota fija")
-    print("  [2] Alemán    — capital fijo")
-    print("  [3] Americano — intereses periódicos + capital al final")
-    print("  [4] Bullet    — pago único al vencimiento\n")
+    sistemas = {
+        "1": ("Francés",   filas_frances),
+        "2": ("Alemán",    filas_aleman),
+        "3": ("Americano", filas_americano),
+        "4": ("Bullet",    filas_bullet),
+        "5": ("Leasing",   filas_leasing)
+    }
+    
+    for k, (name, _) in sistemas.items():
+        print(f"  [{k}] {name}")
+    print()
 
-    sistema = input("  Selecciona sistema [1-4]: ").strip()
-    if sistema not in ["1", "2", "3", "4"]:
-        print("  Opción no válida.")
-        return
+    opt = input("  Selecciona sistema [1-5]: ").strip()
+    if opt not in sistemas:
+        print("  Opción no válida."); return
 
-    capital = float(input("  Capital            : ").replace(",", ""))
-    tasa    = float(input("  Tasa anual (%)     : "))
-    plazo   = int(input(  "  Plazo (meses)      : "))
-    nombre  = input(      "  Nombre préstamo    : ") or "Prestamo"
-    moneda  = input(      "  Moneda (CLP/USD)   : ") or "CLP"
+    name_sys, func = sistemas[opt]
+    capital = _get_input("Capital", parser=float)
+    tasa    = _get_input("Tasa anual (%)", parser=float)
+    plazo   = _get_input("Plazo (meses)", parser=int)
+    nombre  = _get_input("Nombre préstamo", default="Prestamo")
+    moneda  = _get_input("Moneda (CLP/USD)", default="CLP")
 
     tasa_mensual = tasa / 100 / 12
     fecha_inicio = date.today().replace(day=1) + relativedelta(months=1)
 
-    nombres_sistema = {
-        "1": "Francés", "2": "Alemán", "3": "Americano", "4": "Bullet"
-    }
-    nombre_sistema = nombres_sistema[sistema]
+    res = func(capital, tasa_mensual, plazo, fecha_inicio)
+    filas, extra = res if isinstance(res, tuple) else (res, None)
 
-    if sistema == "1":
-        filas, cuota = filas_frances(capital, tasa_mensual, plazo, fecha_inicio)
-        print(f"\n  Cuota mensual      : {moneda} {cuota:,.0f}")
-    elif sistema == "2":
-        filas = filas_aleman(capital, tasa_mensual, plazo, fecha_inicio)
-        print(f"\n  Capital por cuota  : {moneda} {capital/plazo:,.0f}")
-    elif sistema == "3":
-        filas = filas_americano(capital, tasa_mensual, plazo, fecha_inicio)
-        print(f"\n  Interés mensual    : {moneda} {capital * tasa_mensual:,.0f}")
-    elif sistema == "4":
-        filas = filas_bullet(capital, tasa_mensual, plazo, fecha_inicio)
-        pago_final = capital * ((1 + tasa_mensual) ** plazo)
-        print(f"\n  Pago único final   : {moneda} {pago_final:,.0f}")
+    if opt in ["1", "5"]: print(f"\n  Cuota mensual      : {moneda} {extra:,.0f}")
+    elif opt == "2":      print(f"\n  Capital por cuota  : {moneda} {capital/plazo:,.0f}")
+    elif opt == "3":      print(f"\n  Interés mensual    : {moneda} {capital * tasa_mensual:,.0f}")
+    elif opt == "4":      print(f"\n  Pago único final   : {moneda} {capital * ((1 + tasa_mensual) ** plazo):,.0f}")
 
-    total = sum(f[3] for f in filas)
-    interes_total = sum(f[4] for f in filas)
-    print(f"  Total a pagar      : {moneda} {total:,.0f}")
-    print(f"  Total intereses    : {moneda} {interes_total:,.0f}\n")
+    if opt == "5":
+        print(f"  Opción de compra   : {moneda} {extra:,.0f}  (cuota {plazo + 1})")
+        print(f"\n  ⚠️  Al mes {plazo + 1} deberás pagar la opción de compra.")
 
-    archivo = generar_excel(filas, capital, tasa, plazo, moneda, nombre, nombre_sistema)
-    print(f"  ✅ Excel generado: {archivo}\n")
+    if input("\n  ¿Deseas generar la tabla? [s/n]: ").strip().lower() == "s":
+        archivo = generar_excel(filas, capital, tasa, plazo, moneda, nombre, name_sys)
+        print(f"  ✅ Excel generado: {archivo}\n")
