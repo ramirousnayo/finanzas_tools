@@ -7,6 +7,7 @@ from modules.estimador_cobranzas import run as run_estimador
 from modules.analisis_proveedores import run as run_proveedores
 from modules.indicadores_financieros import run as run_indicadores
 from modules.lineas_credito import run as run_lineas
+from modules.reporte_ejecutivo import run as run_reporte
 
 while True:
     print("\n╔══════════════════════════════════╗")
@@ -21,6 +22,7 @@ while True:
     print("  [7] Análisis de proveedores")
     print("  [8] Indicadores financieros")
     print("  [9] Líneas de crédito")
+    print("  [10] Reporte ejecutivo")
     print("  [0] Salir\n")
 
     opcion = input("  Selecciona una opción: ").strip()
@@ -43,6 +45,8 @@ while True:
         run_indicadores()
     elif opcion == "9":
         run_lineas()
+    elif opcion == "10":
+        run_reporte()
     elif opcion == "0":
         print("\n  Hasta luego 👋\n")
         break
