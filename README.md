@@ -61,17 +61,32 @@ Lee un archivo Excel exportado del ERP y genera reporte por tramos de vencimient
 | fecha_venc | Fecha de vencimiento (DD/MM/YYYY) |
 | monto | Monto adeudado |
 
+### 3. Flujo de Caja Mensual
+
+Genera una plantilla Excel para proyectar el flujo de caja mensual y detecta meses con saldo negativo.
+
+| Categoría | Conceptos |
+|---|---|
+| Ingresos | Cobranza clientes, Otros ingresos |
+| Egresos | Pago proveedores, Sueldos, Préstamos, Otros fijos |
+
+**Funciones:**
+- Opción 1 — Genera plantilla en blanco para completar
+- Opción 2 — Procesa plantilla completada y alerta saldos negativos
+
 ---
 
 ## 📁 Estructura del proyecto
 ```
 finanzas_tools/
 ├── data/
-│   └── cobranzas_prueba.xlsx
+│   ├── cobranzas_prueba.xlsx
+│   └── flujo_caja_2025.xlsx
 ├── modules/
 │   ├── __init__.py
 │   ├── amortizacion.py
-│   └── cobranzas.py
+│   ├── cobranzas.py
+│   └── flujo_caja.py
 ├── main.py
 ├── requirements.txt
 └── README.md
