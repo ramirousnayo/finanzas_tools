@@ -2,4 +2,7 @@ venv/
 __pycache__/
 *.xlsx
 !data/cobranzas_prueba.xlsx
+!data/extracto_banco_marzo.xlsx
+!data/libro_interno_marzo.xlsx
+!data/flujo_caja_2025.xlsx
 .DS_Store
